@@ -2,7 +2,7 @@
 // pages/index.tsx
 'use client';
 
-import HomeLogin from "./pages";
+import HomeLogin from "./pages/posts";
 
 export default function Home() {
   return (

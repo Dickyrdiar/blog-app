@@ -1,25 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRouter } from 'next/router';
-import { useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const PostDetail = () => {
+  const { id } = useParams();
   const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
 
   const [post, setPost] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  console.log("id", id);
+  console.log("Post ID:", id);
 
-  useEffect(() => {
-    if (id) {
-      const postId = Array.isArray(id) ? id[0] : id;
-      fetchPostDetails(postId);
-    }
-  }, [id]);
-
-  const fetchPostDetails = async (postId: string) => {
+  // Function to fetch post details
+  const fetchPostDetails = async (postId: string | undefined) => {
     try {
       const response = await fetch(`https://gorest.co.in/public/v2/posts/${postId}`);
       if (!response.ok) {
@@ -34,6 +29,21 @@ const PostDetail = () => {
     }
   };
 
+  // Fetch post data when the `id` parameter changes
+  useEffect(() => {
+    if (id) {
+      const postId = Array.isArray(id) ? id[0] : id; // Ensure id is a string
+      fetchPostDetails(postId);
+    }
+
+    // Optional: Remove unwanted `_rsc` parameter from the URL
+    if (searchParams.has('_rsc')) {
+      const newUrl = window.location.href.split('?')[0];
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [id, searchParams]);
+
+  // Loading and Error handling
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -42,6 +52,7 @@ const PostDetail = () => {
     return <div>Error: {error}</div>;
   }
 
+  // Post Details Rendering
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-2xl p-8 bg-white shadow-lg rounded-lg">
