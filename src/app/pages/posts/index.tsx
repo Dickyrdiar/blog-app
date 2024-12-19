@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// pages/index.tsx
 'use client';
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import LoginCard from "@/components/Card";
-import Header from "@/components/Header";
-import Card from "@/components/CardPost";
-import Pagination from "@/components/Pagination";
+import LoginCard from "@/app/pages/components/Card";
+import Header from "@/app/pages/components/Header";
+import Card from "@/app/pages/components/CardPost";
+import Pagination from "@/app/pages/components/Pagination";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
 
 export default function HomeLogin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,8 +16,7 @@ export default function HomeLogin() {
   const [posts, setPosts] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const postsPerPage = 5;
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  // const router = useRouter()
+  const [currentPage, setCurrentPage] = useState<number>(1);
   
   const handleLogin = (inputName: string, inputToken: string) => {
     if (!inputName || !inputToken) {
@@ -28,11 +25,10 @@ export default function HomeLogin() {
     }
     setName(inputName);
     setToken(inputToken);
-    setIsLoggedIn(true); // Successfully logged in
+    setIsLoggedIn(true);
     setError(null);
   };
 
-  // Fetch posts after login
   useEffect(() => {
     if (isLoggedIn && token) {
       axios
@@ -40,57 +36,32 @@ export default function HomeLogin() {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          setPosts(response.data); // Set the fetched posts to state
+          setPosts(response.data);
         })
-        .catch((err) => {
-          setError("Failed to fetch posts. Please check the token.");
-          return err
+        .catch((err :any) => {
+          setError("Failed to fetch posts. Please check the token.", err);
         });
     }
   }, [isLoggedIn, token]);
 
-  const totalPages = Math.ceil(posts.length / postsPerPage)
+  const totalPages = Math.ceil(posts.length / postsPerPage);
   const currentPosts = posts.slice(
     (currentPage - 1) * postsPerPage,
     currentPage * postsPerPage
-  )
+  );
 
   const handleDelete = async (postId: number) => {
-    // console.log("post id", postId)
-
     try {
-      const response = await axios.delete(`https://gorest.co.in/public/v2/posts/${postId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.delete(`https://gorest.co.in/public/v2/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("deleted post", postId)
-      alert("post deleted successfuly")
-
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-      // window.location.reload()
-      return response
+      alert("Post deleted successfully");
     } catch (error) {
-      console.error('failde to deleted posts', error)
-      alert("error deleted posts")
+      console.error("Failed to delete post", error);
+      alert("Error deleting post");
     }
-  }
-
-  // const handleDetail = async (postId: number) => {
-  //   // console.log("delete post", postId)
-  //   try {
-  //     const response = await axios.get(`https://gorest.co.in/public/v2/posts/${postId}`);
-  //     if (response.status !== 200) {
-  //       throw new Error(`Error fetching post details: ${response.statusText}`);
-  //     }
-  //     // Redirect to post detail page
-  //     router.push(`/posts/${postId}`);
-  //   } catch (error: any) {
-  //     console.error("Failed to fetch post details:", error);
-  //   }
-   
-  // }
-
+  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -100,12 +71,10 @@ export default function HomeLogin() {
         </div>
       ) : (
         <>
-          {/* Fixed Header */}
-          <header className=" text-white p-4 shadow-sm w-full">
+          <header className="text-white p-4 shadow-sm w-full">
             <Header userName={name || undefined} />
           </header>
-    
-          {/* Scrollable Content */}
+
           <main className="flex-grow overflow-y-auto bg-white">
             <div className="w-full p-8 bg-white shadow-lg rounded-lg mt-[20px] mx-auto max-w-4xl">
               <div className="container mb-4 p-5">
@@ -114,32 +83,21 @@ export default function HomeLogin() {
                   {currentPosts.length > 0 ? (
                     currentPosts.map((post) => (
                       <li key={post.id} className="mb-4">
-                      <Card
-                        title={post.title}
-                        body={post.body}
-                        // postId={post.id}
-                        // onDelete={() => handleDelete(post.id)}
-                      />
-                      <div className="flex justify-between mt-2">
-                        {post.id ? (
-                          <Link key={post.id} href={`/posts/${post.id}`} passHref>
-                            <button
-                              className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none"
-                            >
+                        <Card title={post.title} body={post.body} />
+                        <div className="flex justify-between mt-2">
+                          <Link href={`/posts/${post.id}`} passHref>
+                            <button className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none">
                               Detail
                             </button>
                           </Link>
-                        ) : (
-                          <p>Post ID not available</p>
-                        )}
-                        <button
-                          onClick={() => handleDelete(post.id)}
-                          className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 focus:outline-none"
-                        >
-                          Delete Post
-                        </button>
-                      </div>
-                    </li>
+                          <button
+                            onClick={() => handleDelete(post.id)}
+                            className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 focus:outline-none"
+                          >
+                            Delete Post
+                          </button>
+                        </div>
+                      </li>
                     ))
                   ) : (
                     <p>Loading posts...</p>
@@ -156,6 +114,6 @@ export default function HomeLogin() {
           </main>
         </>
       )}
-    </div>  
+    </div>
   );
 }
