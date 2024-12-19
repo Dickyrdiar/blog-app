@@ -114,13 +114,14 @@ export default function HomeLogin() {
                   {currentPosts.length > 0 ? (
                     currentPosts.map((post) => (
                       <li key={post.id} className="mb-4">
-                        <Card
-                          title={post.title}
-                          body={post.body}
-                          // postId={post.id}
-                          // onDelete={() => handleDelete(post.id)}
-                        />
-                         <div className="flex justify-between mt-2">
+                      <Card
+                        title={post.title}
+                        body={post.body}
+                        // postId={post.id}
+                        // onDelete={() => handleDelete(post.id)}
+                      />
+                      <div className="flex justify-between mt-2">
+                        {post.id ? (
                           <Link key={post.id} href={`/posts/${post.id}`} passHref>
                             <button
                               className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none"
@@ -128,15 +129,17 @@ export default function HomeLogin() {
                               Detail
                             </button>
                           </Link>
-                          
-                          <button
-                            onClick={() => handleDelete(post.id)}
-                            className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 focus:outline-none"
-                          >
-                            Delete Post
-                          </button>
-                         </div>
-                      </li>
+                        ) : (
+                          <p>Post ID not available</p>
+                        )}
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 focus:outline-none"
+                        >
+                          Delete Post
+                        </button>
+                      </div>
+                    </li>
                     ))
                   ) : (
                     <p>Loading posts...</p>
