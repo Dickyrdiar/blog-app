@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ userName }) => {
   const router = useRouter();
 
   const navigateToCreatePost = () => {
-    router.push('/posts/create-post');
+    router.push('/posts/create');
   };
 
   return (
